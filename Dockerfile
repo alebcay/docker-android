@@ -73,9 +73,9 @@ RUN apt-get upgrade -y \
       imagemagick \
       nano \
       rsync \
-      screen \
       sudo \
       tig \
+      tmux \
       vim \
       wget \
  && apt-get -t stretch-backports upgrade -y git \

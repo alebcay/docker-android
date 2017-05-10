@@ -10,5 +10,5 @@ fi
 # but some programs (like jack toolchain) rely on it
 export USER="$(whoami)"
 
-# Launch screen session
-screen -s /bin/bash
+# Launch tmux session
+tmux new-session /bin/bash
