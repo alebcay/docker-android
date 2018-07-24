@@ -13,20 +13,17 @@ RUN sed -i 's/main$/main universe/' /etc/apt/sources.list \
  && apt-get update \
  && apt-get clean \
  && apt-get install -y locales \
- && locale-gen en_US.UTF-8
+ && locale-gen --purge en_US.UTF-8 \
+ && echo -e 'LANG="en_US.UTF-8"\nLANGUAGE="en_US:en"\n' > /etc/default/locale
 
 ENV \
-    LANG en_US.UTF-8 \
-    LANGUAGE en_US:en \
-    LC_ALL en_US.UTF-8 \
-
 # ccache specifics
-    CCACHE_SIZE 50G \
-    CCACHE_DIR /srv/ccache \
-    USE_CCACHE 1 \
-    CCACHE_COMPRESS 1 \
+    CCACHE_SIZE=50G \
+    CCACHE_DIR=/srv/ccache \
+    USE_CCACHE=1 \
+    CCACHE_COMPRESS=1 \
 # Extra include PATH, it may not include /usr/local/(s)bin on some systems
-    PATH $PATH:/usr/local/bin/
+    PATH=$PATH:/usr/local/bin/
 
 RUN apt-get upgrade -y \
  && apt-get install -y \
