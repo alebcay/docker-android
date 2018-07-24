@@ -67,7 +67,7 @@ if [[ $IS_RUNNING == "true" ]]; then
 elif [[ $IS_RUNNING == "false" ]]; then
 	docker start -i $CONTAINER
 else
-	docker run $PRIVILEGED -v $SOURCE:$CONTAINER_HOME/android:Z -v $CCACHE:/srv/ccache:Z -i -t $ENVIRONMENT --name $CONTAINER $REPOSITORY:$TAG
+	docker run $PRIVILEGED -e LANG=C.UTF-8 -v $SOURCE:$CONTAINER_HOME/android:Z -v $CCACHE:/srv/ccache:Z -i -t $ENVIRONMENT --name $CONTAINER $REPOSITORY:$TAG
 fi
 
 exit $?

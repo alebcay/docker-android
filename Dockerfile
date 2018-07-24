@@ -1,22 +1,34 @@
 # Build environment for LineageOS
 
-FROM ubuntu:16.04
-MAINTAINER Michael Stucki <michael@stucki.io>
-
-
-ENV \
-# ccache specifics
-    CCACHE_SIZE=50G \
-    CCACHE_DIR=/srv/ccache \
-    USE_CCACHE=1 \
-    CCACHE_COMPRESS=1 \
-# Extra include PATH, it may not include /usr/local/(s)bin on some systems
-    PATH=$PATH:/usr/local/bin/
+FROM debian:stretch
+MAINTAINER Caleb Xu <calebcenter@live.com>
 
 RUN sed -i 's/main$/main universe/' /etc/apt/sources.list \
+ && echo "deb http://deb.debian.org/debian stretch-backports main contrib non-free" >> /etc/apt/sources.list \
+ && echo "deb http://http.us.debian.org/debian sid main non-free contrib" >> /etc/apt/sources.list \
+ && echo "Package: *" >> /etc/apt/preferences \
+ && echo "Pin: release a=unstable" >> /etc/apt/preferences \
+ && echo "Pin-Priority: 50" >> /etc/apt/preferences \
  && export DEBIAN_FRONTEND=noninteractive \
  && apt-get update \
- && apt-get upgrade -y \
+ && apt-get clean \
+ && apt-get install -y locales \
+ && locale-gen en_US.UTF-8
+
+ENV \
+    LANG en_US.UTF-8 \
+    LANGUAGE en_US:en \
+    LC_ALL en_US.UTF-8 \
+
+# ccache specifics
+    CCACHE_SIZE 50G \
+    CCACHE_DIR /srv/ccache \
+    USE_CCACHE 1 \
+    CCACHE_COMPRESS 1 \
+# Extra include PATH, it may not include /usr/local/(s)bin on some systems
+    PATH $PATH:/usr/local/bin/
+
+RUN apt-get upgrade -y \
  && apt-get install -y \
 # Install build dependencies (source: https://wiki.cyanogenmod.org/w/Build_for_bullhead)
       bison \
@@ -29,6 +41,7 @@ RUN sed -i 's/main$/main universe/' /etc/apt/sources.list \
       libesd0-dev \
       liblz4-tool \
       libncurses5-dev \
+      libncursesw6 \
       libsdl1.2-dev \
       libwxgtk3.0-dev \
       libxml2 \
@@ -37,6 +50,8 @@ RUN sed -i 's/main$/main universe/' /etc/apt/sources.list \
       maven \
       openjdk-8-jdk \
       pngcrush \
+      procps \
+      python \
       schedtool \
       squashfs-tools \
       xsltproc \
@@ -64,27 +79,27 @@ RUN sed -i 's/main$/main universe/' /etc/apt/sources.list \
       tig \
       vim \
       wget \
+ && apt-get -t stretch-backports upgrade -y git \
  && rm -rf /var/lib/apt/lists/*
 
 ARG hostuid=1000
 ARG hostgid=1000
 
-RUN \
-    groupadd --gid $hostgid --force build && \
-    useradd --gid $hostgid --uid $hostuid --non-unique build && \
-    rsync -a /etc/skel/ /home/build/
-
-RUN curl https://storage.googleapis.com/git-repo-downloads/repo > /usr/local/bin/repo \
- && chmod a+x /usr/local/bin/repo
+RUN groupadd --gid $hostgid --force build \
+ && useradd --gid $hostgid --uid $hostuid --non-unique build \
+ && rsync -a /etc/skel/ /home/build/ \
+ && curl https://storage.googleapis.com/git-repo-downloads/repo > /usr/local/bin/repo \
+ && chmod a+x /usr/local/bin/repo \
+ && git config --system protocol.version 2 \
 
 # Add sudo permission
-RUN echo "build ALL=NOPASSWD: ALL" > /etc/sudoers.d/build
+ && echo "build ALL=NOPASSWD: ALL" > /etc/sudoers.d/build
 
 ADD startup.sh /home/build/startup.sh
-RUN chmod a+x /home/build/startup.sh
+RUN chmod a+x /home/build/startup.sh \
 
 # Fix ownership
-RUN chown -R build:build /home/build
+ && chown -R build:build /home/build
 
 VOLUME /home/build/android
 VOLUME /srv/ccache

@@ -1,9 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 
 # Initialize ccache if needed
 if [ ! -f ${CCACHE_DIR}/ccache.conf ]; then
 	echo "Initializing ccache in /srv/ccache..."
-	ccache -M ${CCACHE_SIZE}
+	ccache -M ${CCACHE_SIZE:-50G}
 fi
 
 # in Docker, the USER variable is unset by default
