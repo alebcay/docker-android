@@ -28,7 +28,7 @@ The `run.sh` script accepts the following switches:
 * -r|--rebuild - force rebuild the image from scratch
 * -ws|--with-su - Sets the WITH_SU environment variable to true (your builds will include the su binary)
 
-The container uses "tmux" to run the shell. This means that you will be able to open additional shells using [tmux shortcuts][https://gist.github.com/andreyvit/2921703].
+The container uses "tmux" to run the shell. This means that you will be able to open additional shells using [tmux shortcuts](https://gist.github.com/andreyvit/2921703).
 
 ### Credits
 Based on [Michael Stucki's](https://github.com/stucki/) [docker-lineageos](https://github.com/stucki/docker-lineageos). This project builds off of `docker-lineageos` in the following ways:
@@ -37,3 +37,12 @@ Based on [Michael Stucki's](https://github.com/stucki/) [docker-lineageos](https
 - Installs `libncursesw6`, needed by some newer Clang-based toolchains
 - Uses `tmux` instead of `screen`
 - Configures locales correctly to display Unicode characters so that custom ROM build scripts display properly
+
+[Docker]:                      https://www.docker.io/
+[LineageOS]:                   http://lineageos.org/
+[Docker_Installation]:         https://www.docker.io/gettingstarted/
+[Screen_Shortcuts]:            http://www.pixelbeat.org/lkdb/screen.html
+[CyanogenMod_Building_Basics]: https://web-beta.archive.org/web/20161224192643/http://wiki.cyanogenmod.org/w/Development
+[LineageOS_Build_Nexus5]:    https://wiki.lineageos.org/devices/hammerhead/build
+[Discussion thread @ XDA developers]: http://forum.xda-developers.com/showthread.php?t=2650345
+[dotcloud/docker#2224]:        https://github.com/dotcloud/docker/issues/2224
