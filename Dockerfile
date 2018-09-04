@@ -37,6 +37,7 @@ RUN apt-get upgrade -y \
       git \
       gnupg \
       gperf \
+      kmod \
       libesd0-dev \
       liblz4-tool \
       libncurses5-dev \
