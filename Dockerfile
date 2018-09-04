@@ -79,6 +79,7 @@ RUN apt-get upgrade -y \
       tmux \
       vim \
       wget \
+ && apt-get update \
  && apt-get -t stretch-backports upgrade -y git \
  && rm -rf /var/lib/apt/lists/*
 
