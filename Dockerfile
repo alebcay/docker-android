@@ -1,20 +1,7 @@
 # Build environment for LineageOS
 
-FROM debian:stretch
+FROM debian:buster
 MAINTAINER Caleb Xu <calebcenter@live.com>
-
-RUN sed -i 's/main$/main universe/' /etc/apt/sources.list \
- && echo "deb http://deb.debian.org/debian stretch-backports main contrib non-free" >> /etc/apt/sources.list \
- && echo "deb http://http.us.debian.org/debian sid main non-free contrib" >> /etc/apt/sources.list \
- && echo "Package: *" >> /etc/apt/preferences \
- && echo "Pin: release a=unstable" >> /etc/apt/preferences \
- && echo "Pin-Priority: 50" >> /etc/apt/preferences \
- && export DEBIAN_FRONTEND=noninteractive \
- && apt-get update \
- && apt-get clean \
- && apt-get install -y locales \
- && locale-gen --purge en_US.UTF-8 \
- && echo -e 'LANG="en_US.UTF-8"\nLANGUAGE="en_US:en"\n' > /etc/default/locale
 
 ENV \
 # ccache specifics
@@ -27,7 +14,15 @@ ENV \
 # Extra include PATH, it may not include /usr/local/(s)bin on some systems
     PATH=$PATH:/usr/local/bin/
 
-RUN apt-get upgrade -y \
+RUN sed -i 's/main$/main contrib non-free/' /etc/apt/sources.list \
+ && export DEBIAN_FRONTEND=noninteractive \
+ && apt-get update -y \
+ && apt-get clean -y \
+ && apt-get install -y locales \
+ && locale-gen --purge en_US.UTF-8 \
+ && echo -e 'LANG="en_US.UTF-8"\nLANGUAGE="en_US:en"\n' > /etc/default/locale \
+ && apt-get update -y \
+ && apt-get upgrade -y \
  && apt-get install -y \
 # Install build dependencies (source: https://wiki.cyanogenmod.org/w/Build_for_bullhead)
       bison \
@@ -38,7 +33,6 @@ RUN apt-get upgrade -y \
       gnupg \
       gperf \
       kmod \
-      libesd0-dev \
       liblz4-tool \
       libncurses5-dev \
       libncursesw6 \
@@ -48,7 +42,7 @@ RUN apt-get upgrade -y \
       libxml2-utils \
       lzop \
       maven \
-      openjdk-8-jdk \
+      openjdk-11-jdk-headless \
       pngcrush \
       procps \
       python \
@@ -71,6 +65,7 @@ RUN apt-get upgrade -y \
       bsdmainutils \
       ccache \
       file \
+      git \
       imagemagick \
       nano \
       rsync \
@@ -79,27 +74,20 @@ RUN apt-get upgrade -y \
       tmux \
       vim \
       wget \
- && apt-get update \
- && apt-get -t stretch-backports upgrade -y git \
  && rm -rf /var/lib/apt/lists/*
 
 ARG hostuid=1000
 ARG hostgid=1000
 
+ADD startup.sh /home/build/startup.sh
 RUN groupadd --gid $hostgid --force build \
  && useradd --gid $hostgid --uid $hostuid --non-unique build \
  && rsync -a /etc/skel/ /home/build/ \
  && curl https://storage.googleapis.com/git-repo-downloads/repo > /usr/local/bin/repo \
  && chmod a+x /usr/local/bin/repo \
  && git config --system protocol.version 2 \
-
-# Add sudo permission
- && echo "build ALL=NOPASSWD: ALL" > /etc/sudoers.d/build
-
-ADD startup.sh /home/build/startup.sh
-RUN chmod a+x /home/build/startup.sh \
-
-# Fix ownership
+ && echo "build ALL=NOPASSWD: ALL" > /etc/sudoers.d/build \
+ && chmod a+x /home/build/startup.sh \
  && chown -R build:build /home/build
 
 VOLUME /home/build/android
